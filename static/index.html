@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+        <!--<script src="tailwindcss.js"></script>-->
+        <link rel="stylesheet" href="generate_css/tailwind_maya_css.css">
+
+        <script type="text/javascript">
+
+
+            let backend
+            new QWebChannel(qt.webChannelTransport, function(channel) {
+                backend = channel.objects.backend;
+
+                //backend.triggerFunction()
+
+
+                backend.getAssetList(function(response) {
+                    JSON.parse(response).forEach(addItem)
+                });
+
+                //backend.getValue(function(response) {
+                //    document.getElementById("getValueResult").innerText = response;
+                //});
+
+                //backend.roundtrip(JSON.stringify(menu), function(response) {
+                //    customer_answer = JSON.parse(response)
+                //    document.getElementById("roundtripResult").innerText = customer_answer.approved;
+                //});
+
+            })
+
+            function launchDebug() {
+                debugger;
+            }
+
+            function addItem(assetObject) {
+
+                    if(assetObject == undefined){
+                        assetObject = getAssetList()[0]
+                    }
+                    // Get the container where assets are listed
+                    const assetList = document.getElementById('asset-list');
+
+                    // Create a new div for the asset entry
+                    const newAsset = document.createElement('div');
+                    newAsset.className = 'w-full p-2 border-t border-maya-light';
+                    newAsset.id = assetObject.id;
+
+                    // Add the HTML content for the new asset
+                    newAsset.innerHTML = `
+                    <h3 class="text-xl text-neutral-200 font-bold">${assetObject.name}</h3>
+                        <div class="flex flex-cols">
+                            <div class="w-24 h-24 p-2 bg-maya-darker rounded-l">
+                                <img class="object-scale-down rounded-l" src="${assetObject.thumbnailPath}">
+                            </div>
+                            <div class="grow bg-maya-darker p-2 rounded-r text-xs font-light text-neutral-300">
+                                <p>version number: <span id="asset-x-latest-version">${assetObject.latestVersionNumber}</span></p>
+                                <p>status: <span id="asset-x-status">${assetObject.status}</span></p>
+                                <p>last edited: <span id="asset-x-last-edited">${assetObject.lastEditedDate}</span></p>
+                            </div>
+                            <div class="flex flex-col w-24 justify-end pl-2">
+                            <button class="bg-maya-dark text-neutral-300 text-sm rounded" onclick="openAsset(${assetObject.id})">open</button>
+                            <button class="bg-maya-dark text-neutral-300 text-sm rounded mt-2" onclick="importAsset(${assetObject.id})">import</button>
+                            <button class="bg-maya-dark text-neutral-300 text-sm rounded mt-2" onclick="referenceAsset(${assetObject.id})">reference</button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Append the new asset entry to the list
+                    assetList.appendChild(newAsset);
+                }
+
+
+            function openAsset(id){
+                backend.openAsset(id)
+            }
+
+            function importAsset(id){
+                backend.importAsset(id)
+            }
+
+            function referenceAsset(id){
+                backend.referenceAsset(id)
+            }
+
+
+
+        </script>
+    </head>
+    <body class="bg-maya-default">
+        <div class="px-2">
+            <h1 class="text-2xl font-bold text-neutral-200 py-2">Assetlist</h1>
+            <div id="asset-list" class="w-full">
+            </div>
+        </div>
+    </body>
+</html>
