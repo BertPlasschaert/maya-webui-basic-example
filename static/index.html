@@ -7,30 +7,33 @@
         <link rel="stylesheet" href="generate_css/tailwind_maya_css.css">
 
         <script type="text/javascript">
-
-
             let backend
-            new QWebChannel(qt.webChannelTransport, function(channel) {
-                backend = channel.objects.backend;
 
-                //backend.triggerFunction()
+            // only run when the page is fully loaded
+            document.addEventListener("DOMContentLoaded", function() {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    backend = channel.objects.backend;
 
+                    // example fuctions:
+                    //backend.triggerFunction()
 
-                backend.getAssetList(function(response) {
-                    JSON.parse(response).forEach(addItem)
+                    //backend.getValue(function(response) {
+                    //    document.getElementById("getValueResult").innerText = response;
+                    //});
+
+                    //backend.roundtrip(JSON.stringify(menu), function(response) {
+                    //    customer_answer = JSON.parse(response)
+                    //    document.getElementById("roundtripResult").innerText = customer_answer.approved;
+                    //});
+
+                    // populate assetList
+                    backend.getAssetList(function(response) {
+                        JSON.parse(response).forEach(addItem)
+                    });
+
                 });
 
-                //backend.getValue(function(response) {
-                //    document.getElementById("getValueResult").innerText = response;
-                //});
-
-                //backend.roundtrip(JSON.stringify(menu), function(response) {
-                //    customer_answer = JSON.parse(response)
-                //    document.getElementById("roundtripResult").innerText = customer_answer.approved;
-                //});
-
-            })
-
+            });
             function launchDebug() {
                 debugger;
             }
